@@ -1,0 +1,23 @@
+# Skyramp Workspace Configuration
+workspace:
+  repoName: pellepedro-testbot/spring-petclinic
+  repoUrl: git@github.com:pellepedro-testbot/spring-petclinic.git
+metadata:
+  schemaVersion: v1
+  mcpVersion: 0.0.64
+  executorVersion: v1.3.28
+  createdAt: "2026-10-06T17:32:00.155Z"
+  updatedAt: "2026-10-06T17:32:00.157Z"
+services:
+  - serviceName: spring-petclinic-backend
+    language: java
+    framework: junit
+    testDirectory: src/test/java
+    api:
+      authType: none
+      authHeader: ""
+      baseUrl: http://localhost:8080
+    runtimeDetails:
+      serverStartCommand: docker compose -f deployment-testbot/docker-compose.yml up -d petclinic
+      runtime: docker
+      dockerNetwork: petclinic-testbot_default

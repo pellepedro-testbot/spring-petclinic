@@ -1,0 +1,40 @@
+name: Skyramp Testbot
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  testbot:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name != 'issue_comment' ||
+      (github.event.issue.pull_request &&
+       contains(github.event.comment.body, '@skyramp-testbot') &&
+       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      # SUT = Spring PetClinic built from source (deployment-testbot/Dockerfile) on :8080,
+      # H2 in-memory DB with sample data, no auth.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: skyramp/testbot@v0.11.14
+        with:
+          skyrampLicenseFile: ${{ secrets.SKYRAMP_LICENSE_FILE }}
+          anthropicApiKey: ${{ secrets.ANTHROPIC_API_KEY }}
+          targetSetupCommand: './deployment-testbot/setup.sh'
+          targetTeardownCommand: './deployment-testbot/teardown.sh'
+          targetReadyCheckCommand: 'curl -f http://localhost:8080/actuator/health'
+          targetReadyCheckTimeout: 900
+          authTokenCommand: './deployment-testbot/get-token.sh'
+          autoCommit: true
+          postPrComment: true

@@ -1,0 +1,13 @@
+# Spring PetClinic SUT for Skyramp Testbot.
+# Uses the default in-memory H2 database (schema + sample data loaded at startup),
+# so no external DB service is needed. Host port is PETCLINIC_PORT (default 8080).
+name: petclinic-testbot
+services:
+  petclinic:
+    build:
+      context: ..
+      dockerfile: deployment-testbot/Dockerfile
+    image: petclinic-testbot:local
+    ports:
+      - "${PETCLINIC_PORT:-8080}:8080"
+    restart: unless-stopped

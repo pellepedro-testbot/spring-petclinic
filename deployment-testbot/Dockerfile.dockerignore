@@ -1,0 +1,9 @@
+# BuildKit per-Dockerfile ignore file (context is the repo root).
+# .git is excluded; git-commit-id-maven-plugin is configured with failOnNoGitDirectory=false.
+.git
+target
+build
+.gradle
+.idea
+.vscode
+**/.DS_Store
